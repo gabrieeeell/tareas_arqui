@@ -1,0 +1,1 @@
+def convertor_general(num_original, base_origen, base_destino):
