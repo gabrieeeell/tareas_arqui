@@ -5,6 +5,10 @@ DIGITOS_VALIDOS_OCTAL = "01234567"
 DIGITOS_VALIDOS_DECIMAL = "0123456789"
 DIGITOS_VALIDOS_HEXADECIMAL = "0123456789ABCDEF"
 
+# Variable global para el mensaje
+mensaje = ""
+n = 1
+
 # Al final si o si deberiamos (probablemente) hacer la transformacion intermedia a decimal ya que las herramientas/operadores que tenemos son para trabajar en esta base
 
 
@@ -35,7 +39,21 @@ def convertor_general(num_original, base_origen, base_destino):
 def filtro_ascii_valido(numero,base_origen):
     numero_en_decimal = int(convertor_general(numero,base_origen,10))
     if numero_en_decimal >= 32 and numero_en_decimal <= 126:
+        
+        # En este punto numero_en_decimal será cada numero en orden que sea válido dentro del rango ascci, por lo que se puede decodificar el mensaje e irlo almacenando
+        # Conviene hacer la traducción ASCII debido a que los caracteres son válidos, se usa una variable global para ir almacenando el mensaje
+        global mensaje
+        mensaje += chr(numero_en_decimal)
+
+        ## ESTAS 2 LINEAS SON PARA VER SI LA CONVERSIÓN SE HACIA CORRECTAMENTE, HAY QUE BORRARLAS DESPUÉS, PERO SE VE QUE EL 0x68 se traduce a 104 en base 10 pero la tarea
+        # lo consdiera como di fuera 100, pq 100 es "d" en ASCII, pero al hacer la conversión correcta da 104, que es "h" en ASCII
+        #print("el numero es" , numero, "en", base_origen)
+        #print(numero_en_decimal)
+
+        ##
         return True
+
+
     # Else pa demostrar que lo hice yo y no la ia :v (completamente forzado)
     else:
         return False
@@ -58,11 +76,12 @@ def leer_numero_completo(digitos_validos, file, base_origen, base_destino_elegid
 
     # Esto evita lectura de caracter vació, asique luego de esta comprobación puedo hacer el filtrado ASCII y deberia funcionar por cortocircuito
     if whole_number and filtro_ascii_valido(whole_number,base_origen):
-
+        global n
         print(
-            f"valor: {convertor_general(whole_number, base_origen, base_destino_elegida)} "
+            f"valor {n}: {convertor_general(whole_number, base_origen, base_destino_elegida)} "
             f"(Original: {NBO}{whole_number})"
         )
+        n+=1
 
 print("--- DECODIFICADOR DE NOTAS ---\n")
 base_destino_elegida = 0
@@ -91,3 +110,8 @@ while True:
     elif curr_char == "":
         break
 
+
+print("\nMENSAJE DECODIFICADO: ", mensaje)
+
+# Una vez a un loco le pusieron un 0 en el certamen de progra pq no cerró el archivo :v 
+file.close()
