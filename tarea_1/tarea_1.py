@@ -11,28 +11,40 @@ n = 1
 
 # Al final si o si deberiamos (probablemente) hacer la transformacion intermedia a decimal ya que las herramientas/operadores que tenemos son para trabajar en esta base
 
-
 def convertor_general(num_original, base_origen, base_destino):
+    decimal_a_hexadecimal = {10 : "A", 11 : "B", 12 : "C", 13 : "D", 14 : "E", 15 : "F"}
+    hexadecimal_a_decimal = {valor : clave for clave,valor in decimal_a_hexadecimal.items()}
     total = 0
     potencia_actual = 0
-    # asi voltean string los vio
-    for digit in str(num_original)[::-1]:
+    # Se convierte el numero a base 10, multiplicando cada digito por la pontencia que le corresponderia en base 10. ademas de considerar el caso
+    # de que hubieran caracteres hexadecimales como A,B,C...
+    for digit in str(num_original)[::-1]: # asi voltean los string la gente sin atun
+        if digit in hexadecimal_a_decimal:
+            digit = hexadecimal_a_decimal[digit]
         total += int(digit) * base_origen**potencia_actual
         potencia_actual += 1
 
-    # Ahora tengo que encontrar la potencia mas grande por la que poder dividir el numero e ir bajando
-
     resultado = ""
     potencia_actual = 0
+    # Este bucle se usa para encontrar la potencia mas grande de la respectiva base por la que poder dividir el numero
     while total >= base_destino ** (potencia_actual + 1):
         potencia_actual += 1
-    while total > 0:
+
+    # El siguiente bucle ve cuantas veces "cabe" la potencia actual de la base destino en el total y agrega el este numero de veces al resultado
+    # en su posición respectiva, luego disminuye "potencia actual" y repite el proceso
+
+    # La segunda condición es para el caso de que el numero sea perfectamente divisible por una potencia superior a 0, ya que en este caso se
+    # podria terminar el bucle sin haber agregado los ceros correspondientes al final
+    while total > 0 or potencia_actual >= 0:
         next_num = 0
         while total >= (next_num + 1) * base_destino**potencia_actual:
             next_num += 1
         total -= next_num * base_destino**potencia_actual
         potencia_actual -= 1
-        resultado += str(next_num)
+        if next_num >= 10:
+            resultado += decimal_a_hexadecimal[next_num]
+        else:
+            resultado += str(next_num)
     return resultado
 
 # Aprovecharé conversor_general para forzar la base decimal y filtrar según rango ASCII (32 - 126)
@@ -54,18 +66,18 @@ def filtro_ascii_valido(numero,base_origen):
         return True
 
 
-    # Else pa demostrar que lo hice yo y no la ia :v (completamente forzado)
+    # Else pa demostrar que lo hice yo y no la ia :v (completamente forzado) [ademas la ia no usa variables globales 😎]
     else:
         return False
 
 
 # Esta función lee todos los digitos que se consideren validos, que esten de corrido en un archivo y luego muestra el resultado de este numero despues de la conversión llamando a convertor_general
 def leer_numero_completo(digitos_validos, file, base_origen, base_destino_elegida, NBO):
-    whole_number = ""
+    numero_completo = ""
     while True:
         curr_char = file.read(1)
         if curr_char in digitos_validos:
-            whole_number += curr_char
+            numero_completo += curr_char
         else:
             break
 
@@ -75,11 +87,11 @@ def leer_numero_completo(digitos_validos, file, base_origen, base_destino_elegid
     file.seek(file.tell() - 1)
 
     # Esto evita lectura de caracter vació, asique luego de esta comprobación puedo hacer el filtrado ASCII y deberia funcionar por cortocircuito
-    if whole_number and filtro_ascii_valido(whole_number,base_origen):
+    if numero_completo and filtro_ascii_valido(numero_completo,base_origen):
         global n
         print(
-            f"valor {n}: {convertor_general(whole_number, base_origen, base_destino_elegida)} "
-            f"(Original: {NBO}{whole_number})"
+            f"valor {n}: {convertor_general(numero_completo, base_origen, base_destino_elegida)} "
+            f"(Original: {NBO}{numero_completo})"
         )
         n+=1
 
@@ -92,7 +104,7 @@ while base_destino_elegida not in [2, 8, 10, 16]:
     if base_destino_elegida not in [2, 8, 10, 16]:
         print("Ingrese una base valida por favor")
 
-# El cursor del file se mantiene aunque pase este a una funcion y luego vuelva al contexto global al parecer
+# El cursor del file se actualiza también en el contexto global cuando este se mueve en una función
 
 file = open("notas_dm.txt", "r")
 while True:
@@ -106,12 +118,12 @@ while True:
         leer_numero_completo(DIGITOS_VALIDOS_DECIMAL, file, 10, base_destino_elegida,"Decimal #")
     elif curr_char == "!":
         leer_numero_completo(DIGITOS_VALIDOS_HEXADECIMAL, file, 16, base_destino_elegida, "Hexadecimal !")
-    # Si file.read() lee un "" significa que el archivo el archivo ya termino
+    # Si file.read() lee un "" significa que el archivo ya termino
     elif curr_char == "":
         break
 
 
-print("\nMENSAJE DECODIFICADO: ", mensaje)
+print("\nMENSAJE DECODIFICADO:\n", mensaje)
 
 # Una vez a un loco le pusieron un 0 en el certamen de progra pq no cerró el archivo :v 
 file.close()
