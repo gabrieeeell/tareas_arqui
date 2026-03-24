@@ -1,3 +1,5 @@
+import math
+
 # Conversores
 
 OCTAL_A_BINARIO = {
@@ -185,3 +187,19 @@ def Decimal_a_binario(Num_decimal):
         resultado += str(resto)
         # Lo damo welta sin atun
     return resultado[::-1]
+
+
+def desde_binario(num_original, base_destino):
+    # fmt: off
+    resultado = ""
+    if base_destino == 8 or base_destino == 16:
+        conversor_correspondiente = (
+            BINARIO_A_OCTAL if base_destino == 8 else BINARIO_A_HEXADECIMAL
+        )
+        cantidad_de_bits_por_digito = math.ceil(math.sqrt(base_destino))  # 8 -> 3, 16 -> 4
+        while len(num_original) >= cantidad_de_bits_por_digito:
+            resultado = resultado + conversor_correspondiente[num_original[-cantidad_de_bits_por_digito:]]
+            num_original = num_original[:-cantidad_de_bits_por_digito]
+        while len(num_original) > 0 and len(num_original) < cantidad_de_bits_por_digito:
+            num_original = "0" + num_original
+        resultado = resultado + conversor_correspondiente[num_original[-cantidad_de_bits_por_digito:]]

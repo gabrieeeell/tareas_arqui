@@ -1,3 +1,5 @@
+import math
+
 # Conversores
 
 OCTAL_A_BINARIO = {
@@ -12,9 +14,7 @@ OCTAL_A_BINARIO = {
 }
 
 BINARIO_A_OCTAL = {binario: octal for octal, binario in OCTAL_A_BINARIO.items()}
-BINARIO_A_OCTAL["000"] = "0"
 
-# esto probablemente se borre alv :V
 HEXADECIMAL_A_BINARIO = {
     "0": "0000",
     "1": "0001",
@@ -32,6 +32,10 @@ HEXADECIMAL_A_BINARIO = {
     "D": "1101",
     "E": "1110",
     "F": "1111",
+}
+
+BINARIO_A_HEXADECIMAL = {
+    binario: hexadecimal for hexadecimal, binario in HEXADECIMAL_A_BINARIO.items()
 }
 
 
@@ -97,24 +101,61 @@ def desde_decimal(Num, base_destino):
 # almenos que se use un diccionario con 4096 entradas, por lo que ire conviertiendo solo algunos digitos del hexadecimal a la vez e ire pasando estos a octal
 # entonces se podria decir que estoy haciendo una conversion "parcial" a binario
 def hexa_a_octal(num_hexa: str):
+    # fmt: off
     resultado = ""
-    num_hexa = num_hexa[::-1]  # al reves para entendidos
     binario_parcial_del_hexadecimal = ""
+    num_hexa = num_hexa[::-1]
     while len(num_hexa) > 0:
         if len(binario_parcial_del_hexadecimal) < 3:
-            binario_parcial_del_hexadecimal += HEXADECIMAL_A_BINARIO[num_hexa[0]]
+            binario_parcial_del_hexadecimal = (
+                HEXADECIMAL_A_BINARIO[num_hexa[0]] + binario_parcial_del_hexadecimal
+            )
             num_hexa = num_hexa[1:]
         # Ocupo los 3 primeros digitos para pasarlos a su representacion octal y luego los saco de la variable
-        resultado += BINARIO_A_OCTAL[binario_parcial_del_hexadecimal[:3]]
-        binario_parcial_del_hexadecimal = binario_parcial_del_hexadecimal[3:]
+        resultado = BINARIO_A_OCTAL[binario_parcial_del_hexadecimal[-3:]] + resultado # obtengo los 3 ultimos digitos
+
+        binario_parcial_del_hexadecimal = binario_parcial_del_hexadecimal[:-3]
 
     # Aca puede ser que binario_parcial_del_hexadecimal haya quedado con 1 o 2 digitos, en tal caso se extiendo con ceros a la izquierda y se la ultima conversion
-    while len(binario_parcial_del_hexadecimal) < 3:
+    while len(binario_parcial_del_hexadecimal) > 0 and len(binario_parcial_del_hexadecimal) < 3 and binario_parcial_del_hexadecimal.count("0") != len(binario_parcial_del_hexadecimal):
         binario_parcial_del_hexadecimal = "0" + binario_parcial_del_hexadecimal
-    resultado += BINARIO_A_OCTAL[binario_parcial_del_hexadecimal[:3]]
+    resultado = BINARIO_A_OCTAL[binario_parcial_del_hexadecimal[-3:]] + resultado
+
+    # Si el input fueron solo ceros, el código se ira por este caso
+    if not resultado:
+        return "0"
 
     return resultado
 
+
+def octal_a_hexa(num_octal: str):
+    # fmt: off
+    resultado = ""
+    binario_parcial_del_octal = ""
+    num_octal = num_octal[::-1]
+    while len(num_octal) > 0:
+        if len(binario_parcial_del_octal) < 4:
+            binario_parcial_del_octal = OCTAL_A_BINARIO[num_octal[0]] + binario_parcial_del_octal
+            num_octal = num_octal[1:]
+
+        # Por si dentro del anterior if, se alcanza el len() correcto. Si esto fuera un else, el bucle podria terminar sin ver el ultimo byte
+        if len(binario_parcial_del_octal) >= 4:
+            resultado = BINARIO_A_HEXADECIMAL[binario_parcial_del_octal[-4:]] + resultado # obtengo los 3 ultimos digitos
+            binario_parcial_del_octal = binario_parcial_del_octal[:-4]
+
+    # Se agregan 0's para completar el ultimo hexadecimal en caso de que no alcance los 4 bits
+    while len(binario_parcial_del_octal) > 0 and len(binario_parcial_del_octal) < 4 and binario_parcial_del_octal.count("0") != len(binario_parcial_del_octal):
+        binario_parcial_del_octal = "0" + binario_parcial_del_octal
+    resultado = BINARIO_A_HEXADECIMAL[binario_parcial_del_octal[-4:]] + resultado
+
+    # Si el input fueron solo ceros, el código se ira por este caso
+    if not resultado:
+        return "0"
+
+    return resultado
+
+
+print(octal_a_hexa("7"))
 
 ###### BINARIO ####
 
@@ -146,3 +187,19 @@ def Decimal_a_binario(Num_decimal):
         resultado += str(resto)
         # Lo damo welta sin atun
     return resultado[::-1]
+
+
+def desde_binario(num_original, base_destino):
+    # fmt: off
+    resultado = ""
+    if base_destino == 8 or base_destino == 16:
+        conversor_correspondiente = (
+            BINARIO_A_OCTAL if base_destino == 8 else BINARIO_A_HEXADECIMAL
+        )
+        cantidad_de_bits_por_digito = math.ceil(math.sqrt(base_destino))  # 8 -> 3, 16 -> 4
+        while len(num_original) >= cantidad_de_bits_por_digito:
+            resultado = resultado + conversor_correspondiente[num_original[-cantidad_de_bits_por_digito:]]
+            num_original = num_original[:-cantidad_de_bits_por_digito]
+        while len(num_original) > 0 and len(num_original) < cantidad_de_bits_por_digito:
+            num_original = "0" + num_original
+        resultado = resultado + conversor_correspondiente[num_original[-cantidad_de_bits_por_digito:]]

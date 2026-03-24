@@ -1,4 +1,4 @@
-import time
+import conversores
 
 DIGITOS_VALIDOS_BINARIO = "01"
 DIGITOS_VALIDOS_OCTAL = "01234567"
@@ -13,47 +13,23 @@ n = 1
 
 
 def convertor_general(num_original, base_origen, base_destino):
-    decimal_a_hexadecimal = {10: "A", 11: "B", 12: "C", 13: "D", 14: "E", 15: "F"}
-    hexadecimal_a_decimal = {
-        valor: clave for clave, valor in decimal_a_hexadecimal.items()
-    }
-    total = 0
-    potencia_actual = 0
-    # Se convierte el numero a base 10, multiplicando cada digito por la pontencia que le corresponderia en base 10. ademas de considerar el caso
-    # de que hubieran caracteres hexadecimales como A,B,C...
-    for digit in str(num_original)[::-1]:  # asi voltean los string la gente sin atun
-        if digit in hexadecimal_a_decimal:
-            digit = hexadecimal_a_decimal[digit]
-        total += int(digit) * base_origen**potencia_actual
-        potencia_actual += 1
-
-    resultado = ""
-    potencia_actual = 0
-    # Este bucle se usa para encontrar la potencia mas grande de la respectiva base por la que poder dividir el numero
-    while total >= base_destino ** (potencia_actual + 1):
-        potencia_actual += 1
-
-    # El siguiente bucle ve cuantas veces "cabe" la potencia actual de la base destino en el total y agrega el este numero de veces al resultado
-    # en su posición respectiva, luego disminuye "potencia actual" y repite el proceso
-
-    # La segunda condición es para el caso de que el numero sea perfectamente divisible por una potencia superior a 0, ya que en este caso se
-    # podria terminar el bucle sin haber agregado los ceros correspondientes al final
-    while total > 0 or potencia_actual >= 0:
-        next_num = 0
-        while total >= (next_num + 1) * base_destino**potencia_actual:
-            next_num += 1
-        total -= next_num * base_destino**potencia_actual
-        potencia_actual -= 1
-        if next_num >= 10:
-            resultado += decimal_a_hexadecimal[next_num]
-        else:
-            resultado += str(next_num)
-    return resultado
+    if base_origen == 10:
+        return conversores.desde_decimal(num_original, base_destino)
+    elif base_destino == 10:
+        return conversores.a_decimal(num_original, base_origen)
+    elif base_destino == 2:
+        if base_origen == 8:
+            return conversores.Octal_a_binario(num_original)
+        elif base_origen == 16:
+            return conversores.Hexa_a_binario(num_original)
+    elif base_origen == 16 and base_destino == 8:
+        return conversores.hexa_a_octal(num_original)
+    elif base_origen == 8 and base_destino == 16:
+        return conversores.octal_a_hexa(num_original)
 
 
-# Aprovecharé conversor_general para forzar la base decimal y filtrar según rango ASCII (32 - 126)
 def filtro_ascii_valido(numero, base_origen):
-    numero_en_decimal = int(convertor_general(numero, base_origen, 10))
+    numero_en_decimal = int(conversores.a_decimal(numero, base_origen))
     if numero_en_decimal >= 32 and numero_en_decimal <= 126:
         # En este punto numero_en_decimal será cada numero en orden que sea válido dentro del rango ascci, por lo que se puede decodificar el mensaje e irlo almacenando
         # Conviene hacer la traducción ASCII debido a que los caracteres son válidos, se usa una variable global para ir almacenando el mensaje
@@ -138,4 +114,3 @@ print("\nMENSAJE DECODIFICADO:\n", mensaje)
 
 # Una vez a un loco le pusieron un 0 en el certamen de progra pq no cerró el archivo :v
 file.close()
-
