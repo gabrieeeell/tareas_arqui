@@ -41,7 +41,7 @@ BINARIO_A_HEXADECIMAL = {
 
 ########################################## DECIMAL ######################################
 # De cualquier base a decimal
-def a_decimal(num_original, base_origen):
+def a_decimal(num_original: str, base_origen):
     decimal_a_hexadecimal = {10: "A", 11: "B", 12: "C", 13: "D", 14: "E", 15: "F"}
     hexadecimal_a_decimal = {
         valor: clave for clave, valor in decimal_a_hexadecimal.items()
@@ -50,7 +50,7 @@ def a_decimal(num_original, base_origen):
     potencia_actual = 0
     # Se convierte el numero a base 10, multiplicando cada digito por la pontencia que le corresponderia en base 10. ademas de considerar el caso
     # de que hubieran caracteres hexadecimales como A,B,C...
-    for digit in str(num_original)[::-1]:  # asi voltean los string la gente sin atun
+    for digit in num_original[::-1]:  # asi voltean los string la gente sin atun
         if digit in hexadecimal_a_decimal:
             digit = hexadecimal_a_decimal[digit]
         total += int(digit) * base_origen**potencia_actual
@@ -58,12 +58,12 @@ def a_decimal(num_original, base_origen):
     return total
 
 
-def desde_decimal(Num, base_destino):
+def desde_decimal(num_original: int, base_destino):
     decimal_a_hexadecimal = {10: "A", 11: "B", 12: "C", 13: "D", 14: "E", 15: "F"}
     resultado = ""
     potencia_actual = 0
     # Este bucle se usa para encontrar la potencia mas grande de la respectiva base por la que poder dividir el numero
-    while Num >= base_destino ** (potencia_actual + 1):
+    while num_original >= base_destino ** (potencia_actual + 1):
         potencia_actual += 1
 
     # El siguiente bucle ve cuantas veces "cabe" la potencia actual de la base destino en el total y agrega el este numero de veces al resultado
@@ -71,11 +71,11 @@ def desde_decimal(Num, base_destino):
 
     # La segunda condición es para el caso de que el numero sea perfectamente divisible por una potencia superior a 0, ya que en este caso se
     # podria terminar el bucle sin haber agregado los ceros correspondientes al final
-    while Num > 0 or potencia_actual >= 0:
+    while num_original > 0 or potencia_actual >= 0:
         next_num = 0
-        while Num >= (next_num + 1) * base_destino**potencia_actual:
+        while num_original >= (next_num + 1) * base_destino**potencia_actual:
             next_num += 1
-        Num -= next_num * base_destino**potencia_actual
+        num_original -= next_num * base_destino**potencia_actual
         potencia_actual -= 1
         if next_num >= 10:
             resultado += decimal_a_hexadecimal[next_num]
@@ -119,10 +119,11 @@ def hexa_a_octal(num_hexa: str):
     # Aca puede ser que binario_parcial_del_hexadecimal haya quedado con 1 o 2 digitos, en tal caso se extiendo con ceros a la izquierda y se la ultima conversion
     while len(binario_parcial_del_hexadecimal) > 0 and len(binario_parcial_del_hexadecimal) < 3 and binario_parcial_del_hexadecimal.count("0") != len(binario_parcial_del_hexadecimal):
         binario_parcial_del_hexadecimal = "0" + binario_parcial_del_hexadecimal
-    resultado = BINARIO_A_OCTAL[binario_parcial_del_hexadecimal[-3:]] + resultado
+    if len(binario_parcial_del_hexadecimal) == 3:
+        resultado = BINARIO_A_OCTAL[binario_parcial_del_hexadecimal[-3:]] + resultado
 
     # Si el input fueron solo ceros, el código se ira por este caso
-    if not resultado:
+    if not resultado or resultado.count("0") == len(resultado):
         return "0"
 
     return resultado
@@ -146,10 +147,11 @@ def octal_a_hexa(num_octal: str):
     # Se agregan 0's para completar el ultimo hexadecimal en caso de que no alcance los 4 bits
     while len(binario_parcial_del_octal) > 0 and len(binario_parcial_del_octal) < 4 and binario_parcial_del_octal.count("0") != len(binario_parcial_del_octal):
         binario_parcial_del_octal = "0" + binario_parcial_del_octal
-    resultado = BINARIO_A_HEXADECIMAL[binario_parcial_del_octal[-4:]] + resultado
+    if len(binario_parcial_del_octal) == 4:
+        resultado = BINARIO_A_HEXADECIMAL[binario_parcial_del_octal[-4:]] + resultado
 
     # Si el input fueron solo ceros, el código se ira por este caso
-    if not resultado:
+    if not resultado or resultado.count("0") == len(resultado):
         return "0"
 
     return resultado
@@ -165,6 +167,9 @@ def Hexa_a_binario(Num_hexa):
     resultado = ""
     for digito in Num_hexa:
         resultado += HEXADECIMAL_A_BINARIO[digito]
+    # Quitamos los ceros de sobra que puedan quedar al principio
+    while resultado[0] == "0" and len(resultado) > 1:
+        resultado = resultado[1:]
     return resultado
 
 
@@ -172,6 +177,8 @@ def Octal_a_binario(Num_oct):
     resultado = ""
     for digito in Num_oct:
         resultado += OCTAL_A_BINARIO[digito]
+    while resultado[0] == "0" and len(resultado) > 1:
+        resultado = resultado[1:]
     return resultado
 
 
@@ -186,20 +193,22 @@ def Decimal_a_binario(Num_decimal):
         Num_decimal = T_res
         resultado += str(resto)
         # Lo damo welta sin atun
+    while resultado[0] == "0" and len(resultado) > 1:
+        resultado = resultado[1:]
     return resultado[::-1]
 
 
-def desde_binario(num_original, base_destino):
+def desde_binario_a_hexa_o_octal(num_original, base_destino):
     # fmt: off
     resultado = ""
     if base_destino == 8 or base_destino == 16:
-        conversor_correspondiente = (
-            BINARIO_A_OCTAL if base_destino == 8 else BINARIO_A_HEXADECIMAL
-        )
+        conversor_correspondiente = BINARIO_A_OCTAL if base_destino == 8 else BINARIO_A_HEXADECIMAL
         cantidad_de_bits_por_digito = math.ceil(math.sqrt(base_destino))  # 8 -> 3, 16 -> 4
         while len(num_original) >= cantidad_de_bits_por_digito:
-            resultado = resultado + conversor_correspondiente[num_original[-cantidad_de_bits_por_digito:]]
+            resultado = conversor_correspondiente[num_original[-cantidad_de_bits_por_digito:]] + resultado
             num_original = num_original[:-cantidad_de_bits_por_digito]
         while len(num_original) > 0 and len(num_original) < cantidad_de_bits_por_digito:
             num_original = "0" + num_original
-        resultado = resultado + conversor_correspondiente[num_original[-cantidad_de_bits_por_digito:]]
+        if len(num_original) == cantidad_de_bits_por_digito:
+            resultado = conversor_correspondiente[num_original[-cantidad_de_bits_por_digito:]] + resultado
+        return resultado

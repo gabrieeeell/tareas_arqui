@@ -12,9 +12,12 @@ n = 1
 # Al final si o si deberiamos (probablemente) hacer la transformacion intermedia a decimal ya que las herramientas/operadores que tenemos son para trabajar en esta base
 
 
+# Cubre todas las posibles conversiones
 def convertor_general(num_original, base_origen, base_destino):
-    if base_origen == 10:
-        return conversores.desde_decimal(num_original, base_destino)
+    if base_destino == base_origen:
+        return num_original
+    elif base_origen == 10:
+        return conversores.desde_decimal(int(num_original), base_destino)
     elif base_destino == 10:
         return conversores.a_decimal(num_original, base_origen)
     elif base_destino == 2:
@@ -26,6 +29,8 @@ def convertor_general(num_original, base_origen, base_destino):
         return conversores.hexa_a_octal(num_original)
     elif base_origen == 8 and base_destino == 16:
         return conversores.octal_a_hexa(num_original)
+    elif base_origen == 2:
+        return conversores.desde_binario_a_hexa_o_octal(num_original, base_destino)
 
 
 def filtro_ascii_valido(numero, base_origen):
@@ -83,6 +88,14 @@ while base_destino_elegida not in [2, 8, 10, 16]:
     if base_destino_elegida not in [2, 8, 10, 16]:
         print("Ingrese una base valida por favor")
 
+print(
+    "[+] Procesando archivo: notas_dm.txt...\n[!] Filtrando ruido místico (valores fuera de rango ASCII)...\n"
+)
+
+print(
+    f"LISTA DE VALORES EXTRAÍDOS (Base {base_destino_elegida}):\n--------------------------------------------------"
+)
+
 # El cursor del file se actualiza también en el contexto global cuando este se mueve en una función
 
 file = open("notas_dm.txt", "r")
@@ -108,9 +121,11 @@ while True:
     # Si file.read() lee un "" significa que el archivo ya termino
     elif curr_char == "":
         break
+print("--------------------------------------------------\n")
 
 
-print("\nMENSAJE DECODIFICADO:\n", mensaje)
+print("\nMENSAJE DECODIFICADO:")
+print(f"{mensaje}\n\n[Proceso finalizado con éxito]")
 
 # Una vez a un loco le pusieron un 0 en el certamen de progra pq no cerró el archivo :v
 file.close()
