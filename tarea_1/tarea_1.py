@@ -49,7 +49,7 @@ def filtro_ascii_valido(numero, base_origen):
         ##
         return True
 
-    # Else pa demostrar que lo hice yo y no la ia :v (completamente forzado) [ademas la ia no usa variables globales 😎]
+    # Else pa demostrar que lo hice yo y no la ia :v (completamente forzado) [ademas la ia no usa variables globales 😎] (Era pq el else era noob code :V)
     else:
         return False
 
@@ -126,6 +126,4 @@ print("--------------------------------------------------\n")
 
 print("\nMENSAJE DECODIFICADO:")
 print(f"{mensaje}\n\n[Proceso finalizado con éxito]")
-
-# Una vez a un loco le pusieron un 0 en el certamen de progra pq no cerró el archivo :v
 file.close()

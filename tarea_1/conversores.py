@@ -129,6 +129,18 @@ def hexa_a_octal(num_hexa: str):
     return resultado
 
 
+"""
+Nombre: Hexa a binario
+Entrada: Num_hexa (String)
+Descripción:
+Lo que hace esta función es ir concatenando la representación de 4-bits de cada uno de los carácteres del
+número en hexadecimal y al quita los ceros de la izquierda (Solo por temas estéticos, esto básicamente no afecta
+el valor del resultado)
+
+Salida: Transforma el string de un número hexadecimal a un string con su representación en binario.
+"""
+
+
 def octal_a_hexa(num_octal: str):
     # fmt: off
     resultado = ""
@@ -161,8 +173,16 @@ print(octal_a_hexa("7"))
 
 ###### BINARIO ####
 
+"""
+Nombre: Hexa a binario
+Entrada: Num_hexa (String)
+Descripción:
+Lo que hace esta función es ir concatenando la representación de 4-bits de cada uno de los carácteres del
+número en hexadecimal y al quita los ceros de la izquierda (Solo por temas estéticos, esto básicamente no afecta
+el valor del resultado)
 
-# 2ED
+Salida: Transforma el string de un número hexadecimal a un string con su representación en binario.
+"""
 def Hexa_a_binario(Num_hexa):
     resultado = ""
     for digito in Num_hexa:
@@ -173,6 +193,17 @@ def Hexa_a_binario(Num_hexa):
     return resultado
 
 
+"""
+Nombre: Octal_a_binario
+Entrada: Num_oct (String)
+Descripción:
+Lo que hace esta función es ir concatenando la representación de 3-bits de cada uno de los carácteres del
+número en octal y al quita los ceros de la izquierda (Solo por temas estéticos, esto básicamente no afecta
+el valor del resultado)
+
+Salida: Transforma el string de un número octal a un string con su representación en binario.
+"""
+
 def Octal_a_binario(Num_oct):
     resultado = ""
     for digito in Num_oct:
@@ -182,7 +213,19 @@ def Octal_a_binario(Num_oct):
     return resultado
 
 
-# 81
+"""
+Nombre: Decimal_a_binario
+Entrada: Num_decimal (String)
+Descripción:
+Esta función recibe un string (Por temas de coherencia con las otras funciones), pero se trabaja con su valor entero (Por eso se hace el casting).
+Lo que se busca es ir dividiendo el número en 2 e ir guardando el resto de cada división, luego se repite este proceso hasta que 
+el resultado de la división sea 0. 
+En cada una de las iteraciónes se va guardando el respectivo resto de la división, y finalmente se debe dar vuelta el resultado para
+conseguir la representación binaria válida.
+
+Salida: Transforma el string de un número decimal a un string con su representación en binario.
+"""
+
 def Decimal_a_binario(Num_decimal):
     resultado = ""
     T_res = 1
@@ -192,12 +235,27 @@ def Decimal_a_binario(Num_decimal):
         resto = Num_decimal % 2
         Num_decimal = T_res
         resultado += str(resto)
-        # Lo damo welta sin atun
     while resultado[0] == "0" and len(resultado) > 1:
         resultado = resultado[1:]
     return resultado[::-1]
 
 
+"""
+Nombre: desde_binario_a_hexa_o_octal()
+Entradas:
+- num_original: string
+- base_destino: int
+Descripción:
+Lo que hace esta función es identificar en primera instancia si se está trabajado con octales o con hexadecimales, en base
+a esto se asigna una base destino (8 o 16) y se utiliza un conversor (el cual tiene la representaciónes decimales de 3 y 4 bits).
+Luego se identifica la cantidad de bits por digito (para agrupar de 3-bits si se requiere octal o de 4-bits si se requiere hexadecimal)
+Luego lo que se hace es ir tomando desde el "final" hacia delante los dígitos binarios e irlos agrupando según la base_destino.
+Finalmente para el caso donde el ultimo bloque de dígitos binarios no corresponda con el largo, se rellena a la izquierda con 0's.
+En el caso de que el último bloque de dígitos binarios corresponda con el largo (ósea que el largo original sea múltiplo de 3 o 4), entonces
+simplemente se agrega la representación al resultado retorna el string resultado.
+
+Salida: Toma un número en binario, una base (8 o 16) y entrega un string con el binario representado en la base elegida.
+"""
 def desde_binario_a_hexa_o_octal(num_original, base_destino):
     # fmt: off
     resultado = ""
