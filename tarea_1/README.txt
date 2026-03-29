@@ -4,10 +4,10 @@
 Paralelo 200 
 
 ## Especifiación de algoritmos y desarrollo realizado ##
-(falta explicar)
-1. convertor_general:
-2. filtro_ascii_valido:
-3. leer_numero_completo:
+- Cada una de las funciones está comentada debidamente en el apartado donde fue escrita, creemos que es mas ordenado de esta forma ya que se puede ir viendo al mismo tiempo el código.
+- Una especificación importante es respecto a la conversión de hexadecimal a octal y visceversa, ya que el profesor dijo que se podía pasar a binario y luego de eso hacer la conversión correspondiente.
+Debido a que, ya teníamos funciones hechas para los casos comentados, decidimos agregar al final las funciones con la lógica de agrupación de bits al tener la representación completa del número en binario.
+Al final de archivo se explica mas detalladamente la situación, pero en resumen, hicimos 2 funciones extra.
 
 
 ## Supuesto utilizados ##

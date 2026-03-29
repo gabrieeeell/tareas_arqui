@@ -102,7 +102,10 @@ que afecten al mensaje condificado).
 def leer_numero_completo(digitos_validos, file, base_origen, base_destino_elegida, NBO):
     numero_completo = ""
     while True:
-        curr_char = file.read(1)
+        curr_char = file.read(1) 
+        if curr_char == "":
+            file.seek(file.tell() - 1)
+            break
         if curr_char in digitos_validos:
             numero_completo += curr_char
         else:
@@ -131,9 +134,11 @@ print(
 print(
     f"LISTA DE VALORES EXTRAÍDOS (Base {base_destino_elegida}):\n--------------------------------------------------"
 )
-file = open("notas_dm.txt", "r")
+
+## ARCHIVO PARA PROBAR##
+file = open("prueba_5.txt", "r")
 while True:
-    curr_char = file.read(1)
+    curr_char = file.read(1) # !!6
     if curr_char == "*":
         leer_numero_completo(
             DIGITOS_VALIDOS_BINARIO, file, 2, base_destino_elegida, "Binario *"
@@ -152,6 +157,7 @@ while True:
         )
     elif curr_char == "":
         break
+
 print("--------------------------------------------------\n")
 
 
