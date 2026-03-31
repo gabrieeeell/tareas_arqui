@@ -71,6 +71,8 @@ Finalmente se va guardando el resultado.
 
 Salida: Retorna un número entero que representa el valor en base 10.
 """
+
+
 def a_decimal(num_original: str, base_origen):
     decimal_a_hexadecimal = {10: "A", 11: "B", 12: "C", 13: "D", 14: "E", 15: "F"}
     hexadecimal_a_decimal = {
@@ -93,8 +95,19 @@ Entradas:
 - base_destino: int
 
 Descripción:
-FALTA AQUI
+La función primero ve la potencia más grande de la base destino que es menor a num_original, para depués ver exactamente cuantas veces cabe esta en num_original
+y añadir la cantidad "n" de veces que haya cabido la potencia como digito al resultado, ademas de restar "n * (base_destino ** potencia_actual)" a num_original.
+Luego se repite el proceso pero disminuyendo en uno la potencia y se empezando a trabajar con el digito de la derecha del resultado (ya que el disminuir al 
+potencia que esta diviendo, debe tener menor significancia el digito
+Cabe resaltar que la cantidad "n" de veces que quepa la potencia en el numero siempre sera menor a "base_destino" ya que sino se hubiera empezado a trabajar
+con una potencia mayor al principio de la función y el resulado de "num_original - (n * base_destino**potencia_actual)" como debe ser menor a 
+"base_destino**potencia_actual", se tendra que al disminuir en uno la potencia acutal, "base_destino**(potencia_actual - 1)" solo podra caber (base_destino - 1)
+veces como maximo en lo que quede de num_original
+
+Salida: Un string de la representación del num_original pero en la base_destino elegida
 """
+
+
 def desde_decimal(num_original: int, base_destino):
     decimal_a_hexadecimal = {10: "A", 11: "B", 12: "C", 13: "D", 14: "E", 15: "F"}
     resultado = ""
@@ -129,8 +142,16 @@ Entradas:
 - num_hexa: string
 
 Descripción:
-FALTA AQUI
+Se tiene un "binario_parcial_del_hexadecimal" que son los ultimos digitos del hexadecimal que todavia no se hayan usado, pero convertidos a binario,
+en el bucle principal, se mantiene que los bits de este numero siempre sean almenos 3, para transformar 3 bits en su digito octal equivalente, añadiendo este
+al resultado
+Al final de la función, si llego a sobrar una cantidad de bits < 3, en "binario_parcial_del_hexadecimal", se rellena con 0 para que llegue a 3 bits y se
+pasa a octal
+
+Salida: Un string de la representacion octal del hexadecimal de entrada
 """
+
+
 # Por email se dijo que las conversiones se tienen que hacer sin tener una "base puente" entre 2 bases, sin embargo entre octal y hexadecimal esto es imposible cumplirlo al 100%
 # almenos que se use un diccionario con 4096 entradas, por lo que ire conviertiendo solo algunos digitos del hexadecimal a la vez e ire pasando estos a octal
 # entonces se podria decir que estoy haciendo una conversion "parcial" a binario
@@ -141,9 +162,7 @@ def hexa_a_octal(num_hexa: str):
     num_hexa = num_hexa[::-1]
     while len(num_hexa) > 0:
         if len(binario_parcial_del_hexadecimal) < 3:
-            binario_parcial_del_hexadecimal = (
-                HEXADECIMAL_A_BINARIO[num_hexa[0]] + binario_parcial_del_hexadecimal
-            )
+            binario_parcial_del_hexadecimal = HEXADECIMAL_A_BINARIO[num_hexa[0]] + binario_parcial_del_hexadecimal
             num_hexa = num_hexa[1:]
         # Ocupo los 3 primeros digitos para pasarlos a su representacion octal y luego los saco de la variable
         resultado = BINARIO_A_OCTAL[binario_parcial_del_hexadecimal[-3:]] + resultado # obtengo los 3 ultimos digitos
@@ -153,7 +172,7 @@ def hexa_a_octal(num_hexa: str):
     # Aca puede ser que binario_parcial_del_hexadecimal haya quedado con 1 o 2 digitos, en tal caso se extiendo con ceros a la izquierda y se la ultima conversion
     while len(binario_parcial_del_hexadecimal) > 0 and len(binario_parcial_del_hexadecimal) < 3 and binario_parcial_del_hexadecimal.count("0") != len(binario_parcial_del_hexadecimal):
         binario_parcial_del_hexadecimal = "0" + binario_parcial_del_hexadecimal
-    if len(binario_parcial_del_hexadecimal) == 3:
+
         resultado = BINARIO_A_OCTAL[binario_parcial_del_hexadecimal[-3:]] + resultado
 
     # Si el input fueron solo ceros, el código se ira por este caso
@@ -163,10 +182,18 @@ def hexa_a_octal(num_hexa: str):
     return resultado
 
 
-
-
 """
-FALTA AQUI
+Nombre: octal_a_hexa
+Entrada: 
+- num_octal : str
+Descripción:
+Se tiene un "binario_parcial_del_octal" que son los ultimos digitos del octal que todavia no se hayan usado, pero convertidos a binario,
+en el bucle principal, se mantiene que los bits de este numero siempre sean almenos 4, para transformar 4 bits en su digito hexadecimal equivalente, añadiendo este
+al resultado
+Al final de la función, si llego a sobrar una cantidad de bits < 4, en "binario_parcial_del_octal", se rellena con 0 para que llegue a 4 bits y se
+pasa a hexadecimal
+
+Salida: El string de la representación hexadecimal del octal de entrada
 """
 
 
@@ -198,13 +225,12 @@ def octal_a_hexa(num_octal: str):
     return resultado
 
 
-
-
 ###### BINARIO ####
 
 """
 Nombre: Hexa a binario
-Entrada: Num_hexa (String)
+Entrada:
+- Num_hexa : str
 Descripción:
 Lo que hace esta función es ir concatenando la representación de 4-bits de cada uno de los carácteres del
 número en hexadecimal y al quita los ceros de la izquierda (Solo por temas estéticos, esto básicamente no afecta
@@ -212,6 +238,8 @@ el valor del resultado)
 
 Salida: Transforma el string de un número hexadecimal a un string con su representación en binario.
 """
+
+
 def Hexa_a_binario(Num_hexa):
     resultado = ""
     for digito in Num_hexa:
@@ -232,6 +260,7 @@ el valor del resultado)
 
 Salida: Transforma el string de un número octal a un string con su representación en binario.
 """
+
 
 def Octal_a_binario(Num_oct):
     resultado = ""
@@ -254,6 +283,7 @@ conseguir la representación binaria válida.
 
 Salida: Transforma el string de un número decimal a un string con su representación en binario.
 """
+
 
 def Decimal_a_binario(Num_decimal):
     resultado = ""
@@ -285,6 +315,8 @@ simplemente se agrega la representación al resultado retorna el string resultad
 
 Salida: Toma un número en binario, una base (8 o 16) y entrega un string con el binario representado en la base elegida.
 """
+
+
 def desde_binario_a_hexa_o_octal(num_original, base_destino):
     # fmt: off
     resultado = ""
@@ -299,7 +331,7 @@ def desde_binario_a_hexa_o_octal(num_original, base_destino):
         if len(num_original) == cantidad_de_bits_por_digito:
             resultado = conversor_correspondiente[num_original[-cantidad_de_bits_por_digito:]] + resultado
         return resultado
-    
+
 
     """
 El profesor en clases dijo que, para pasar de hexadecimal a octal y visceversa se puede representar en binario, ya que el objetivo de aprendizaje

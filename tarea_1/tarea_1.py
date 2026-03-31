@@ -11,8 +11,6 @@ mensaje = ""
 n = 1
 
 
-
-
 """
 Nombre: convertor_general()
 Entradas:
@@ -34,6 +32,8 @@ Finalmente si la base origen es 2, entonces se llama a la función que transform
 
 Salida: Retorna un string con la representación del número en la base destino solicitada.
 """
+
+
 def convertor_general(num_original, base_origen, base_destino):
     if base_destino == base_origen:
         return num_original
@@ -53,6 +53,7 @@ def convertor_general(num_original, base_origen, base_destino):
     elif base_origen == 2:
         return conversores.desde_binario_a_hexa_o_octal(num_original, base_destino)
 
+
 """
 Nombre: filtro_ascii_valido()
 Entradas:
@@ -67,6 +68,8 @@ Lo que hace la función es convertir el número, ver si está dentro del rango e
 Salida: 
 Booleano (True si el número es un carácter ASCII válido, False en caso contrario).
 """
+
+
 def filtro_ascii_valido(numero, base_origen):
     numero_en_decimal = int(conversores.a_decimal(numero, base_origen))
     if numero_en_decimal >= 32 and numero_en_decimal <= 126:
@@ -75,6 +78,7 @@ def filtro_ascii_valido(numero, base_origen):
         return True
     else:
         return False
+
 
 """
 Nombre: leer_numero_completo()
@@ -99,10 +103,12 @@ Salida: No retorna un valor pero imprime en la consola el valor convertido a la 
 que afecten al mensaje condificado).
 
 """
+
+
 def leer_numero_completo(digitos_validos, file, base_origen, base_destino_elegida, NBO):
     numero_completo = ""
     while True:
-        curr_char = file.read(1) 
+        curr_char = file.read(1)
         if curr_char == "":
             file.seek(file.tell() - 1)
             break
@@ -137,8 +143,9 @@ print(
 
 ## ARCHIVO PARA PROBAR##
 file = open("prueba_5.txt", "r")
+# Bucle que lee caracter a caracter
 while True:
-    curr_char = file.read(1) # !!6
+    curr_char = file.read(1)  # !!6
     if curr_char == "*":
         leer_numero_completo(
             DIGITOS_VALIDOS_BINARIO, file, 2, base_destino_elegida, "Binario *"
